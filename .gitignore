@@ -1,0 +1,19 @@
+# Target de compilação do Maven
+target/
+*.egg-info/
+
+# Arquivos da IDE IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Arquivos do Sistema Operacional (macOS)
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+
+# Configurações locais do Spring (onde ficam senhas de banco de dados locais)
+.env
