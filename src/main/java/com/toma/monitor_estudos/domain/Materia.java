@@ -7,8 +7,8 @@ import jakarta.persistence.*;
 public class Materia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    String titulo;
+    private Long id;
+    private String titulo;
 
     public Materia(){
     }
