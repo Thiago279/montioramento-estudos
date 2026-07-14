@@ -28,4 +28,10 @@ public class MateriaController {
         List<Materia> materias = materiaService.listarTodas();
         return ResponseEntity.ok(materias);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id){
+        materiaService.deletar(id);
+        return ResponseEntity.noContent().build();
+    }
 }
