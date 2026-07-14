@@ -31,7 +31,10 @@ public class MateriaController {
     public ResponseEntity<List<MateriaResponse>> listar(){
         List<MateriaResponse> materias = materiaService.listarTodas()
                 .stream()
-                .map(materia -> new MateriaResponse(materia.getId(), materia.getTitulo()))
+                .map(materia -> new MateriaResponse(
+                        materia.getId(),
+                        materia.getTitulo()
+                ))
                 .toList();
         return ResponseEntity.ok(materias);
     }
