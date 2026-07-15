@@ -2,12 +2,14 @@ package com.toma.monitor_estudos.service;
 
 import com.toma.monitor_estudos.domain.Materia;
 import com.toma.monitor_estudos.domain.SessaoEstudo;
+import com.toma.monitor_estudos.exception.SessaoInvalidaException;
 import com.toma.monitor_estudos.repository.MateriaRepository;
 import com.toma.monitor_estudos.repository.SessaoEstudoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -23,6 +25,7 @@ public class SessaoEstudoService {
 
     @Transactional
     public SessaoEstudo salvar(Long materiaId, SessaoEstudo sessao) {
+        validarIntervaloDatas(sessao.getDataInicio(),sessao.getDataFim());
         Materia materia = materiaRepository.findById(materiaId)
                 .orElseThrow(() -> new EntityNotFoundException("Matéria não encontrada com o ID: " + materiaId));
 
@@ -44,7 +47,7 @@ public class SessaoEstudoService {
     public SessaoEstudo atualizar(Long id, Long novaMateriaId, SessaoEstudo dadosAtualizados){
         SessaoEstudo sessaoExistente = sessaoEstudoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sessão não encontrada com o ID: " + id));
-
+        validarIntervaloDatas(dadosAtualizados.getDataInicio(), dadosAtualizados.getDataFim());
         // 2. Busca a nova matéria (se foi alterada)
         Materia materia = materiaRepository.findById(novaMateriaId)
                 .orElseThrow(() -> new RuntimeException("Matéria não encontrada com o ID: " + novaMateriaId));
@@ -56,6 +59,12 @@ public class SessaoEstudoService {
 
         // 4. Salva no banco
         return sessaoEstudoRepository.save(sessaoExistente);
+    }
+
+    private void validarIntervaloDatas(LocalDateTime inicio, LocalDateTime fim) {
+        if(inicio == null || fim == null || inicio.isAfter(fim)){
+            throw new SessaoInvalidaException("Datas de sessão inválidas");
+        }
     }
 
 }
