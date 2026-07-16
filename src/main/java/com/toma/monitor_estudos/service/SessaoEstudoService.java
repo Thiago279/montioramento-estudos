@@ -2,6 +2,8 @@ package com.toma.monitor_estudos.service;
 
 import com.toma.monitor_estudos.domain.Materia;
 import com.toma.monitor_estudos.domain.SessaoEstudo;
+import com.toma.monitor_estudos.dto.SessaoEstudoRequest;
+import com.toma.monitor_estudos.dto.SessaoEstudoResponse;
 import com.toma.monitor_estudos.exception.SessaoInvalidaException;
 import com.toma.monitor_estudos.repository.MateriaRepository;
 import com.toma.monitor_estudos.repository.SessaoEstudoRepository;
@@ -24,50 +26,70 @@ public class SessaoEstudoService {
     }
 
     @Transactional
-    public SessaoEstudo salvar(Long materiaId, SessaoEstudo sessao) {
-        validarIntervaloDatas(sessao.getDataInicio(),sessao.getDataFim());
-        Materia materia = materiaRepository.findById(materiaId)
-                .orElseThrow(() -> new EntityNotFoundException("Matéria não encontrada com o ID: " + materiaId));
+    public SessaoEstudoResponse salvar(SessaoEstudoRequest request) {
+        validarIntervaloDatas(request.dataInicio(), request.dataFim());
 
+        Materia materia = materiaRepository.findById(request.materiaId())
+                .orElseThrow(() -> new EntityNotFoundException("Matéria não encontrada com o ID: " + request.materiaId()));
+
+        SessaoEstudo sessao = new SessaoEstudo();
+        sessao.setDataInicio(request.dataInicio());
+        sessao.setDataFim(request.dataFim());
         sessao.setMateria(materia);
-        return sessaoEstudoRepository.save(sessao);
+
+        SessaoEstudo sessaoSalva = sessaoEstudoRepository.save(sessao);
+        return mapearParaResponse(sessaoSalva);
     }
 
-    public List<SessaoEstudo> listarTodas(){
-        return sessaoEstudoRepository.findAll();
+    public List<SessaoEstudoResponse> listarTodas() {
+        return sessaoEstudoRepository.findAll()
+                .stream()
+                .map(this::mapearParaResponse)
+                .toList();
     }
 
-    public void deletar (Long id){
-        if (!sessaoEstudoRepository.existsById(id)){
+    @Transactional
+    public void deletar(Long id) {
+        if (!sessaoEstudoRepository.existsById(id)) {
             throw new EntityNotFoundException("Sessão de estudos não encontrada");
         }
         sessaoEstudoRepository.deleteById(id);
     }
 
-    public SessaoEstudo atualizar(Long id, Long novaMateriaId, SessaoEstudo dadosAtualizados){
+    @Transactional
+    public SessaoEstudoResponse atualizar(Long id, SessaoEstudoRequest request) {
         SessaoEstudo sessaoExistente = sessaoEstudoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sessão não encontrada com o ID: " + id));
-        validarIntervaloDatas(dadosAtualizados.getDataInicio(), dadosAtualizados.getDataFim());
-        // 2. Busca a nova matéria (se foi alterada)
-        Materia materia = materiaRepository.findById(novaMateriaId)
-                .orElseThrow(() -> new RuntimeException("Matéria não encontrada com o ID: " + novaMateriaId));
+                .orElseThrow(() -> new EntityNotFoundException("Sessão não encontrada com o ID: " + id));
 
-        // 3. Atualiza os dados
+        validarIntervaloDatas(request.dataInicio(), request.dataFim());
+
+        Materia materia = materiaRepository.findById(request.materiaId())
+                .orElseThrow(() -> new EntityNotFoundException("Matéria não encontrada com o ID: " + request.materiaId()));
+
         sessaoExistente.setMateria(materia);
-        sessaoExistente.setDataInicio(dadosAtualizados.getDataInicio());
-        sessaoExistente.setDataFim(dadosAtualizados.getDataFim());
+        sessaoExistente.setDataInicio(request.dataInicio());
+        sessaoExistente.setDataFim(request.dataFim());
 
-        // 4. Salva no banco
-        return sessaoEstudoRepository.save(sessaoExistente);
+        SessaoEstudo sessaoAtualizada = sessaoEstudoRepository.save(sessaoExistente);
+        return mapearParaResponse(sessaoAtualizada);
     }
 
     private void validarIntervaloDatas(LocalDateTime inicio, LocalDateTime fim) {
-        if(inicio == null) {
+        if (inicio == null) {
             throw new SessaoInvalidaException("A data de início é obrigatória.");
         }
-        if(fim != null && inicio.isAfter(fim)){
+        if (fim != null && inicio.isAfter(fim)) {
             throw new SessaoInvalidaException("A data de início não pode ser posterior à data de fim.");
         }
     }
 
+    private SessaoEstudoResponse mapearParaResponse(SessaoEstudo sessao) {
+        return new SessaoEstudoResponse(
+                sessao.getId(),
+                sessao.getDataInicio(),
+                sessao.getDataFim(),
+                sessao.getMateria().getId(),
+                sessao.getMateria().getTitulo()
+        );
+    }
 }

@@ -9,6 +9,8 @@ public class Materia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String titulo;
+    @Column(nullable = false)
+    private String cor = "#808080";
 
     public Materia(){
     }
@@ -33,5 +35,11 @@ public class Materia {
         this.titulo = titulo;
     }
 
+    public String getCor() {
+        return cor;
+    }
 
+    public void setCor(String cor) {
+        this.cor = cor;
+    }
 }
