@@ -62,8 +62,11 @@ public class SessaoEstudoService {
     }
 
     private void validarIntervaloDatas(LocalDateTime inicio, LocalDateTime fim) {
-        if(inicio == null || fim == null || inicio.isAfter(fim)){
-            throw new SessaoInvalidaException("Datas de sessão inválidas");
+        if(inicio == null) {
+            throw new SessaoInvalidaException("A data de início é obrigatória.");
+        }
+        if(fim != null && inicio.isAfter(fim)){
+            throw new SessaoInvalidaException("A data de início não pode ser posterior à data de fim.");
         }
     }
 
