@@ -25,4 +25,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erroResponse);
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErroResponse> handleErrosNaoTratados(Exception ex, HttpServletRequest request) {
+        ErroResponse erroResponse = new ErroResponse(
+                LocalDateTime.now(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                "Ocorreu um erro interno inesperado no servidor. Por favor, tente novamente mais tarde.",
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(erroResponse);
+    }
+
 }
