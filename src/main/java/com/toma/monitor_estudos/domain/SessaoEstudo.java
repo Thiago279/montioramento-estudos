@@ -10,7 +10,9 @@ public class SessaoEstudo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private LocalDateTime dataInicio;
+    @Column(nullable = true)
     private LocalDateTime dataFim;
 
     @ManyToOne

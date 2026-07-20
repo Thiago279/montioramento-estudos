@@ -1,7 +1,5 @@
-package com.toma.monitor_estudos.controller;
+package com.toma.monitor_estudos.exception;
 
-import com.toma.monitor_estudos.exception.ErroResponse;
-import com.toma.monitor_estudos.exception.SessaoInvalidaException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
