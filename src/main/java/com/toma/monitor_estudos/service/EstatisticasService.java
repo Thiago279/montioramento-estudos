@@ -73,17 +73,16 @@ public class EstatisticasService {
         List<LocalDate> diasDaSemana = inicioSemana.datesUntil(fimSemana.plusDays(1)).toList();
 
         List<DiaSemanaResponse> diasResumo = diasDaSemana.stream()
-                .map(dia -> processarDia(dia, sessoes, agora))
+                .map(dia -> gerarResumoDia(dia, sessoes, agora))
                 .toList();
 
 
-        EstatisticaSemanalResponse estatisticaSemana  = new EstatisticaSemanalResponse(
+        return new EstatisticaSemanalResponse(
                 inicioSemana,
                 fimSemana,
                 tempoTotalSemana,
                 diasResumo
         );
-        return estatisticaSemana;
     }
 
     private SessaoResumoResponse mapearParaResumo(SessaoEstudo sessao, LocalDateTime agora) {
@@ -115,7 +114,7 @@ public class EstatisticasService {
         return Math.max(0, minutos); // Garante que não retorne negativo por milissegundos de diferença
     }
 
-    private DiaSemanaResponse processarDia(LocalDate dia, List<SessaoEstudo> todasSessoes, LocalDateTime agora) {
+    private DiaSemanaResponse gerarResumoDia(LocalDate dia, List<SessaoEstudo> todasSessoes, LocalDateTime agora) {
         Map<Materia, Long> minutosPorMateria = new HashMap<>();
 
         // 'for' para agrupar e somar os minutos por matéria

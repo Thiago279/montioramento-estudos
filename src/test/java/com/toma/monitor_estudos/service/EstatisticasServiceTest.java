@@ -178,7 +178,7 @@ class EstatisticasServiceTest {
         Mockito.when(sessaoEstudoRepository.findByDataInicioBetween(any(), any()))
                 .thenReturn(List.of(sessaoSegunda, sessaoQuarta));
 
-        
+
 
         // Act
         EstatisticaSemanalResponse response = estatisticasService.obterEstatisticaSemanal(quarta);

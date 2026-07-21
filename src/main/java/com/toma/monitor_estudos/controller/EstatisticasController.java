@@ -21,10 +21,10 @@ public class EstatisticasController {
 
     @GetMapping("/diaria")
     public ResponseEntity<EstatisticaDiariaResponse> obterDiaria(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataReferencia) {
 
         // Se o frontend não enviar o parâmetro ?data=YYYY-MM-DD, assume a data de hoje por padrão
-        LocalDate dataConsulta = (data != null) ? data : LocalDate.now();
+        LocalDate dataConsulta = (dataReferencia != null) ? dataReferencia : LocalDate.now();
 
         EstatisticaDiariaResponse response = estatisticasService.obterEstatisticaDiaria(dataConsulta);
         return ResponseEntity.ok(response);
