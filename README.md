@@ -1,3 +1,14 @@
-Monitoramento de Estudos - Backend
+# Monitor Estudos
 
-API REST em Spring Boot para gerenciamento e monitoramento de horas de estudo diárias por assunto.
+API REST para monitoramento de sessões de estudo.
+
+## Stack
+
+- Java 21
+- Spring Boot
+- PostgreSQL
+- Docker
+
+## Status
+
+Versão atual: v0.1.0
