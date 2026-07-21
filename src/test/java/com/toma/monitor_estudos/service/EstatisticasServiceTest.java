@@ -4,6 +4,7 @@ import com.toma.monitor_estudos.domain.Materia;
 import com.toma.monitor_estudos.domain.SessaoEstudo;
 import com.toma.monitor_estudos.domain.StatusSessao;
 import com.toma.monitor_estudos.dto.estatisticas.EstatisticaDiariaResponse;
+import com.toma.monitor_estudos.dto.estatisticas.EstatisticaSemanalResponse;
 import com.toma.monitor_estudos.repository.SessaoEstudoRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -145,4 +146,81 @@ class EstatisticasServiceTest {
         Assertions.assertEquals(2, response.sessoes().size());
         Assertions.assertEquals(210L, response.tempoTotalMinutos()); // 120 + 90 = 210 min
     }
+
+    @Test
+    void deveCalcularEstatisticaSemanalComSucesso(){
+        // Arrange
+        LocalDate segunda = LocalDate.of(2026, 7, 20);
+        LocalDate quarta = LocalDate.of(2026, 7, 22);
+
+        Materia java = new Materia();
+        java.setId(3L);
+        java.setTitulo("Programação Java");
+        java.setCor("#808080");
+
+        Materia js = new Materia();
+        js.setId(4L);
+        js.setTitulo("Programação Javascript");
+        js.setCor("#4A90E2");
+
+        SessaoEstudo sessaoSegunda = new SessaoEstudo();
+        sessaoSegunda.setId(6L);
+        sessaoSegunda.setMateria(java);
+        sessaoSegunda.setDataInicio(LocalDateTime.of(2026, 7, 20, 13, 0));
+        sessaoSegunda.setDataFim(LocalDateTime.of(2026, 7, 20, 14, 0));
+
+        SessaoEstudo sessaoQuarta = new SessaoEstudo();
+        sessaoQuarta.setId(7L);
+        sessaoQuarta.setMateria(js);
+        sessaoQuarta.setDataInicio(LocalDateTime.of(2026, 7, 22, 13, 0));
+        sessaoQuarta.setDataFim(LocalDateTime.of(2026, 7, 22, 15, 0));
+
+        Mockito.when(sessaoEstudoRepository.findByDataInicioBetween(any(), any()))
+                .thenReturn(List.of(sessaoSegunda, sessaoQuarta));
+
+        
+
+        // Act
+        EstatisticaSemanalResponse response = estatisticasService.obterEstatisticaSemanal(quarta);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(180L, response.tempoTotalMinutos());
+
+        var diaSegunda = response.dias().get(0);
+        Assertions.assertEquals(segunda, diaSegunda.data());
+        Assertions.assertEquals(60L, diaSegunda.tempoTotalMinutos());
+        Assertions.assertEquals("Programação Java", diaSegunda.materias().get(0).materiaTitulo());
+
+        var diaTerca = response.dias().get(1);
+        Assertions.assertEquals(0L, diaTerca.tempoTotalMinutos());
+        Assertions.assertTrue(diaTerca.materias().isEmpty());
+
+        var diaQuarta = response.dias().get(2);
+        Assertions.assertEquals(quarta, diaQuarta.data());
+        Assertions.assertEquals(120L, diaQuarta.tempoTotalMinutos());
+        Assertions.assertEquals("Programação Javascript", diaQuarta.materias().get(0).materiaTitulo());
+    }
+
+    @Test
+    void deveRetornarEstruturaZeradaQuandoNaoHouverEstudosNaSemana() {
+        // Arrange
+        LocalDate segunda = LocalDate.of(2026, 7, 20);
+
+        Mockito.when(sessaoEstudoRepository.findByDataInicioBetween(any(), any()))
+                .thenReturn(Collections.emptyList());
+
+        // Act
+        EstatisticaSemanalResponse response = estatisticasService.obterEstatisticaSemanal(segunda);
+
+        // Assert
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(0L, response.tempoTotalMinutos());
+        Assertions.assertEquals(7, response.dias().size());
+
+        for (var dia : response.dias()) {
+            Assertions.assertEquals(0L, dia.tempoTotalMinutos());
+            Assertions.assertTrue(dia.materias().isEmpty());
+        }
+    }
+
 }

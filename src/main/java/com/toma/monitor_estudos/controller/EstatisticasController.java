@@ -1,6 +1,7 @@
 package com.toma.monitor_estudos.controller;
 
 import com.toma.monitor_estudos.dto.estatisticas.EstatisticaDiariaResponse;
+import com.toma.monitor_estudos.dto.estatisticas.EstatisticaSemanalResponse;
 import com.toma.monitor_estudos.service.EstatisticasService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -28,4 +29,12 @@ public class EstatisticasController {
         EstatisticaDiariaResponse response = estatisticasService.obterEstatisticaDiaria(dataConsulta);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/semanal")
+    public ResponseEntity<EstatisticaSemanalResponse> obterSemanal(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data){
+        EstatisticaSemanalResponse response = estatisticasService.obterEstatisticaSemanal(data);
+        return ResponseEntity.ok(response);
+    }
+
 }
