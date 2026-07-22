@@ -1,5 +1,6 @@
 package com.toma.monitor_estudos.exception;
 
+import com.toma.monitor_estudos.dto.erro.ErroResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;

@@ -28,7 +28,10 @@ public class EstatisticasController {
 
     @GetMapping("/diaria")
     @Operation(summary = "Obtém estatísticas diárias", description = "Retorna o tempo total acumulado e o detalhamento das sessões de estudo para a data informada. Se omitida, considera a data atual.")
-    @ApiResponse(responseCode = "200", description = "Relatório diário gerado com sucesso")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Relatório diário gerado com sucesso"
+    )
     public ResponseEntity<EstatisticaDiariaResponse> obterDiaria(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
 

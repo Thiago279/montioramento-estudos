@@ -2,8 +2,11 @@ package com.toma.monitor_estudos.controller;
 
 import com.toma.monitor_estudos.dto.MateriaRequest;
 import com.toma.monitor_estudos.dto.MateriaResponse;
+import com.toma.monitor_estudos.dto.erro.ErroResponse;
 import com.toma.monitor_estudos.service.MateriaService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,8 +31,15 @@ public class MateriaController {
     @PostMapping
     @Operation(summary = "Cria uma nova matéria", description = "Cria uma nova matéria com base nos dados fornecidos no corpo da requisição. (titulo e cor)")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Matéria cadastrada com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Dados de entrada inválidos")
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Matéria cadastrada com sucesso"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Dados de entrada inválidos",
+                    content = @Content(schema = @Schema(implementation = ErroResponse.class))
+    )
     })
     public ResponseEntity<MateriaResponse> criar(@RequestBody @Valid MateriaRequest request) {
         MateriaResponse response = materiaService.salvar(request);
@@ -38,7 +48,9 @@ public class MateriaController {
 
     @GetMapping
     @Operation(summary = "Lista todas as matérias", description = "Retorna uma lista com todas as matérias cadastradas no sistema.")
-    @ApiResponse(responseCode = "200", description = "Lista de matérias retornada com sucesso")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Lista de matérias retornada com sucesso")
     public ResponseEntity<List<MateriaResponse>> listar() {
         List<MateriaResponse> materias = materiaService.listarTodas();
         return ResponseEntity.ok(materias);
@@ -47,8 +59,15 @@ public class MateriaController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Remove uma matéria", description = "Exclui uma matéria cadastrada pelo seu ID.")
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Matéria excluída com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Matéria não encontrada para exclusão")
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "Matéria excluída com sucesso"
+    ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Matéria não encontrada para exclusão",
+                    content = @Content(schema = @Schema(implementation = ErroResponse.class))
+    )
     })
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         materiaService.deletar(id);
