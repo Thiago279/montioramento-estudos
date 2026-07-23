@@ -96,4 +96,30 @@ public class SessaoEstudoController {
         SessaoEstudoResponse response = sessaoEstudoService.atualizar(id, request);
         return ResponseEntity.ok(response);
     }
+
+    @PatchMapping("/{id}/finalizar")
+    @Operation(
+            summary = "Finaliza uma sessão de estudo em andamento",
+            description = "Define automaticamente a data e hora de término da sessão ativa para o momento atual."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Sessão de estudo finalizada com sucesso"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "A sessão de estudo já se encontra finalizada",
+                    content = @Content(schema = @Schema(implementation = ErroResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Sessão de estudo não encontrada para finalização",
+                    content = @Content(schema = @Schema(implementation = ErroResponse.class))
+            )
+    })
+    public ResponseEntity<SessaoEstudoResponse> finalizar(@PathVariable Long id) {
+        SessaoEstudoResponse response = sessaoEstudoService.finalizar(id);
+        return ResponseEntity.ok(response);
+    }
 }

@@ -36,6 +36,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(erroResponse);
     }
 
+    @ExceptionHandler(SessaoJaFinalizadaException.class)
+    public ResponseEntity<ErroResponse> handleSessaoJaFinalizada(SessaoJaFinalizadaException ex, HttpServletRequest request){
+        ErroResponse erroResponse = buildErroResponse(
+                HttpStatus.BAD_REQUEST,
+                ex.getMessage(),
+                request
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erroResponse);
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErroResponse> handleEntityNotFoundException(EntityNotFoundException ex, HttpServletRequest request) {
         ErroResponse erroResponse = buildErroResponse(

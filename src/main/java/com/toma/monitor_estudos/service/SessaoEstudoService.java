@@ -6,6 +6,7 @@ import com.toma.monitor_estudos.dto.SessaoEstudoRequest;
 import com.toma.monitor_estudos.dto.SessaoEstudoResponse;
 import com.toma.monitor_estudos.exception.SessaoEmAndamentoException;
 import com.toma.monitor_estudos.exception.SessaoInvalidaException;
+import com.toma.monitor_estudos.exception.SessaoJaFinalizadaException;
 import com.toma.monitor_estudos.repository.MateriaRepository;
 import com.toma.monitor_estudos.repository.SessaoEstudoRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -78,6 +79,21 @@ public class SessaoEstudoService {
         SessaoEstudo sessaoAtualizada = sessaoEstudoRepository.save(sessaoExistente);
         return mapearParaResponse(sessaoAtualizada);
     }
+
+    @Transactional
+    public SessaoEstudoResponse finalizar(Long id){
+        SessaoEstudo sessao = sessaoEstudoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Sessão não encontrada com o ID: " + id));
+
+        if(sessao.getDataFim() != null){
+            throw new SessaoJaFinalizadaException("Esta sessão de estudos já foi finalizada.");
+        }
+        sessao.setDataFim(LocalDateTime.now());
+        SessaoEstudo sessaoSalva = sessaoEstudoRepository.save(sessao);
+
+        return mapearParaResponse(sessaoSalva);
+    }
+
 
     private void validarIntervaloDatas(LocalDateTime inicio, LocalDateTime fim) {
         if (inicio == null) {
