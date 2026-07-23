@@ -26,6 +26,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erroResponse);
     }
 
+    @ExceptionHandler(SessaoEmAndamentoException.class)
+    public ResponseEntity<ErroResponse> handleSessaoEmAndamento(SessaoEmAndamentoException ex, HttpServletRequest request){
+        ErroResponse erroResponse = buildErroResponse(
+                HttpStatus.CONFLICT,
+                ex.getMessage(),
+                request
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(erroResponse);
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErroResponse> handleEntityNotFoundException(EntityNotFoundException ex, HttpServletRequest request) {
         ErroResponse erroResponse = buildErroResponse(
