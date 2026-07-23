@@ -1,10 +1,14 @@
 package com.toma.monitor_estudos.controller;
 
+import com.toma.monitor_estudos.dto.erro.ErroResponse;
 import com.toma.monitor_estudos.dto.estatisticas.EstatisticaDiariaResponse;
 import com.toma.monitor_estudos.dto.estatisticas.EstatisticaSemanalResponse;
 import com.toma.monitor_estudos.service.EstatisticasService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -28,10 +32,18 @@ public class EstatisticasController {
 
     @GetMapping("/diaria")
     @Operation(summary = "Obtém estatísticas diárias", description = "Retorna o tempo total acumulado e o detalhamento das sessões de estudo para a data informada. Se omitida, considera a data atual.")
-    @ApiResponse(
+    @ApiResponses({
+            @ApiResponse(
             responseCode = "200",
             description = "Relatório diário gerado com sucesso"
-    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Formato de data inválido. O parâmetro 'data' deve seguir o padrão ISO (YYYY-MM-DD)",
+                    content = @Content(schema = @Schema(implementation = ErroResponse.class))
+            )
+
+    })
     public ResponseEntity<EstatisticaDiariaResponse> obterDiaria(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
 
@@ -44,7 +56,15 @@ public class EstatisticasController {
 
     @GetMapping("/semanal")
     @Operation(summary = "Obtém estatísticas semanais", description = "Retorna a soma de minutos e o agrupamento por matérias de Segunda a Domingo para a semana da data informada. Se omitida, considera a semana atual.")
-    @ApiResponse(responseCode = "200", description = "Relatório semanal gerado com sucesso")
+    @ApiResponses({@ApiResponse(
+            responseCode = "200",
+            description = "Relatório semanal gerado com sucesso"
+    ),
+    @ApiResponse(
+            responseCode = "400",
+            description = "Formato de data inválido. O parâmetro 'data' deve seguir o padrão ISO (YYYY-MM-DD)",
+            content = @Content(schema = @Schema(implementation = ErroResponse.class))
+    )})
     public ResponseEntity<EstatisticaSemanalResponse> obterSemanal(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data){
         EstatisticaSemanalResponse response = estatisticasService.obterEstatisticaSemanal(data);

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
@@ -44,6 +45,18 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining(";\n "));
         ErroResponse erroResponse = buildErroResponse(HttpStatus.BAD_REQUEST,mensagem, request);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erroResponse);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErroResponse> handleTypeMismatch(
+            MethodArgumentTypeMismatchException ex,
+            HttpServletRequest request) {
+
+        String mensagem = String.format("O parâmetro '%s' recebeu um valor inválido ('%s'). O formato esperado é YYYY-MM-DD.",
+                ex.getName(), ex.getValue());
+
+        ErroResponse erro = buildErroResponse(HttpStatus.BAD_REQUEST, mensagem, request);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
     }
 
     private ErroResponse buildErroResponse(HttpStatus status, String mensagem, HttpServletRequest request) {
