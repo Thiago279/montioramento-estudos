@@ -3,6 +3,8 @@ package com.toma.monitor_estudos.exception;
 import com.toma.monitor_estudos.dto.erro.ErroResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,6 +17,8 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(SessaoInvalidaException.class)
     public ResponseEntity<ErroResponse> handleSessaoInvalida(SessaoInvalidaException ex, HttpServletRequest request){
@@ -92,6 +96,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErroResponse> handleErrosNaoTratados(Exception ex, HttpServletRequest request) {
+
+        log.error("Erro inesperado", ex);
 
         ErroResponse erroResponse = buildErroResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,

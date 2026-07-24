@@ -21,7 +21,7 @@ public interface SessaoEstudoRepository extends JpaRepository<SessaoEstudo, Long
       AND s.dataInicio < :fim
       AND (s.dataFim IS NULL OR s.dataFim > :inicio)
 """)
-    Optional <SessaoEstudo> findConflitoHorario(
+    List <SessaoEstudo> findConflitosHorario(
             @Param("inicio") LocalDateTime inicio,
             @Param("fim") LocalDateTime fim,
             @Param("idIgnorar") Long idIgnorar

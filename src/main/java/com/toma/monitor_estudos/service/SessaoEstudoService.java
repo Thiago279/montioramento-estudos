@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class SessaoEstudoService {
@@ -118,10 +117,10 @@ public class SessaoEstudoService {
     }
 
     private void validarConflitoHorario(LocalDateTime inicio, LocalDateTime fim, Long idIgnorar) {
-        Optional<SessaoEstudo> conflito = sessaoEstudoRepository.findConflitoHorario(inicio, fim, idIgnorar);
+        List<SessaoEstudo> conflito = sessaoEstudoRepository.findConflitosHorario(inicio, fim, idIgnorar);
 
-        if (conflito.isPresent()) {
-            SessaoEstudo s = conflito.get();
+        if (!conflito.isEmpty()) {
+            SessaoEstudo s = conflito.get(0);
             String materiaNome = (s.getMateria() != null) ? s.getMateria().getTitulo() : "outra matéria";
 
             throw new SessaoInvalidaException(
